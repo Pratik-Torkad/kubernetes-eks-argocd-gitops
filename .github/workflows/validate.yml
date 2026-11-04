@@ -1,0 +1,66 @@
+name: Validate Terraform and Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - "kubernetes/**"
+      - "argocd/**"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "terraform/**"
+      - "kubernetes/**"
+      - "argocd/**"
+      - ".github/workflows/validate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform format and validation
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.5"
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive
+
+      - name: Initialize providers without remote backend
+        run: terraform init -backend=false
+
+      - name: Validate configuration
+        run: terraform validate
+
+  kubernetes:
+    name: Kubernetes manifest schema validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate application manifests
+        run: |
+          docker run --rm \
+            -v "$PWD/kubernetes/app:/work:ro" \
+            ghcr.io/yannh/kubeconform:v0.6.7 \
+            -strict -summary \
+            /work/namespace.yaml \
+            /work/deployment.yaml \
+            /work/service.yaml
+
+      - name: Render Kustomize application
+        run: kubectl kustomize kubernetes/app
