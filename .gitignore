@@ -1,0 +1,28 @@
+# Terraform state and local working directory
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+terraform.tfvars
+terraform.tfvars.json
+
+# Credentials and local cluster configuration
+.env
+.env.*
+*.pem
+*.key
+kubeconfig
+.kube/
+.aws/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
