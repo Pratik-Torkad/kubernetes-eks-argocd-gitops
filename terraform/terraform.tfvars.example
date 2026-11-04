@@ -1,0 +1,19 @@
+# Safe default: no AWS resources are created.
+enable_cluster = false
+
+aws_region         = "ap-south-1"
+cluster_name       = "gitops-eks-lab"
+kubernetes_version = "1.37"
+
+vpc_cidr             = "10.40.0.0/16"
+public_subnet_cidrs  = ["10.40.0.0/20", "10.40.16.0/20"]
+private_subnet_cidrs = ["10.40.128.0/20", "10.40.144.0/20"]
+
+# Before enabling the cluster, set enable_cluster = true and replace
+# this empty list with your public IPv4 CIDR, e.g. ["198.51.100.25/32"].
+# Do not use 0.0.0.0/0.
+cluster_endpoint_public_access       = true
+cluster_endpoint_public_access_cidrs = []
+
+node_instance_types = ["t3.medium"]
+node_desired_size   = 1
